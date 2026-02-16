@@ -1,0 +1,148 @@
+# Forerouter VPA Agent — Local Mode Configuration
+# Run with: ./forerouter --mode=local --config=configs/config.local.yaml
+
+mode: local
+
+gateway:
+  http_port: 318089
+  grpc_port: 318090
+  mcp:
+    enabled: true
+    port: 318091
+    base_path: "/mcp"
+    # tool_whitelist: []   # Empty = expose all tools
+    # default_node_id: "local"
+  tls:
+    enabled: false
+  auth:
+    enabled: false  # Local mode: no auth needed
+    # jwt_secret: ""
+    # agent_tokens: []  # gRPC agent tokens (not needed in local mode)
+  rate_limit:
+    requests_per_second: 100
+    burst: 200
+
+  # Subprocess agent management (disabled in local mode — agent runs in-process)
+  subprocess:
+    enabled: false
+    agents: []
+
+agent:
+  gateway_addr: "in-process"  # Uses Go channel, not network
+  node_name: "default"
+  max_iterations: 30           # Max ReAct loop iterations before forcing a final answer
+  llm:
+    default_provider: openai
+    # Dedicated multimodal providers (leave empty to disable corresponding tool)
+    vision_provider: openai_vision   # Used by analyze_image tool
+    # video_provider: openai_vision  # Used by analyze_video tool (many vision models also handle video)
+    # audio_provider: ""             # Used by transcribe_audio tool
+    providers:
+      openai:
+        api_key: "sk-fydcqbkkuseejfnsdwbywtfayjjoylfqompablhykhiicnlu"
+        model: Qwen/Qwen3-8B
+        base_url: "https://api.siliconflow.cn/v1"
+        max_tokens: 4096
+        temperature: 0.7
+      openai_vision:
+        type: openai                 # Explicit type since name != "openai"
+        api_key: "9a6e17ad88b5af3b340cc14b64276c3d.PZabQ0cAVR8A8mMN"
+        model: glm-4.6v-flash
+        base_url: "https://open.bigmodel.cn/api/paas/v4"
+        max_tokens: 4096
+        temperature: 0.3
+      claude:
+        api_key: "${ANTHROPIC_API_KEY}"
+        model: claude-sonnet-4-20250514
+        max_tokens: 4096
+      ollama:
+        endpoint: "http://localhost:11434"
+        model: llama3
+  memory:
+    conversation_max_tokens: 8000
+    long_term_db: "~/.forerouter/data/memory.db"
+    embedding_provider: openai
+  tools:
+    enabled:
+      - file_read
+      - file_write
+      - file_append
+      - file_delete
+      - file_copy
+      - file_move
+      - file_info
+      - file_exists
+      - file_search
+      - directory_list
+      - directory_create
+      - directory_delete
+      - grep
+      - process_exec
+      - memory_search
+      - memory_save
+      - web_search
+      - url_fetch
+      - activate_skill
+      - read_skill_file
+      - list_skill_files
+      - analyze_image
+      - analyze_video
+      - transcribe_audio
+      - code_interpreter
+    search:
+      default_provider: duckduckgo   # Free, no API key needed. Options: duckduckgo, tavily, bing, google, brave, searxng
+      max_results: 5
+      timeout_seconds: 15
+      providers:
+        duckduckgo: {}               # No config needed
+        # tavily:
+        #   api_key: "${TAVILY_API_KEY}"
+        #   search_depth: "basic"    # "basic" or "advanced"
+        # bing:
+        #   api_key: "${BING_API_KEY}"
+        #   market: "zh-CN"
+        # google:
+        #   api_key: "${GOOGLE_API_KEY}"
+        #   cx: "${GOOGLE_CX}"
+        # brave:
+        #   api_key: "${BRAVE_API_KEY}"
+        # searxng:
+        #   base_url: "http://localhost:8888"
+  security:
+    file_access:
+      # In local mode, no allowed_paths restriction — agent can access any path
+      # except explicitly denied ones. Add allowed_paths to restrict if needed.
+      allowed_paths: []
+      denied_paths:
+        - "~/.ssh"
+        - "~/.gnupg"
+        - "~/.aws"
+    command_execution:
+      require_confirmation: true
+      timeout_seconds: 30
+  plugins:
+    dir: "~/.forerouter/plugins"
+    enabled: []
+
+  # Agent Skills — specialized instructions loaded on demand
+  skills:
+    enabled: true
+    builtin: true                    # Load built-in skills (image/video/audio understanding, etc.)
+    dirs:
+      - "~/.forerouter/skills"       # User-created custom skills
+      # - "/path/to/team/skills"     # Team-shared skills
+
+  # Code Interpreter sub-agent — writes & runs Python code for data analysis, scripting, etc.
+  code_interpreter:
+    enabled: true
+    # provider: ""                  # LLM provider for code generation (empty = use default)
+    # python_path: ""               # Python executable (empty = auto-detect python3/python)
+    max_iterations: 20               # Max sub-agent ReAct iterations
+    max_execution_time: 60           # Seconds per code execution
+    output_dir: "~/.forerouter/output"  # Directory for generated files (charts, exports)
+
+logging:
+  level: debug
+  file: "~/.forerouter/logs/forerouter.log"
+  max_size_mb: 50
+  max_backups: 5

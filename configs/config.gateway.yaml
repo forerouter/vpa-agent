@@ -1,0 +1,51 @@
+# Forerouter Gateway — Cloud Deployment Configuration
+# Run with: ./forerouter --mode=gateway --config=configs/config.gateway.yaml
+
+mode: gateway
+
+gateway:
+  http_port: 318089
+  grpc_port: 318090
+  mcp:
+    enabled: true
+    port: 318091
+    base_path: "/mcp"
+    # tool_whitelist:              # Restrict exposed tools (empty = all)
+    #   - file_read
+    #   - process_exec
+    # default_node_id: ""          # Auto-select first online node
+  tls:
+    enabled: true
+    cert_file: "./cert/forerouter.pem"
+    key_file: "./cert/forerouter.key"
+  auth:
+    enabled: true
+    jwt_secret: "fvHQ5yi96rDqk1uRL90nLFcNkor99uKKSp6bxFhUqCRkr73ql46tPoyCPyz6dBQt"
+    agent_tokens:                  # Allowed tokens for gRPC agent connections
+      - "Rf7XbvjHXQrYuhWsLXg1DZi1WexZoHHKBYQ4MXG9yET9bxcf"
+    access_keys:                   # API keys that can exchange for JWT tokens (POST /api/v1/auth/token)
+      - "cm0sRRq0AsT3Z6VlAn42pDqhjryw1sBpj0ro8vkpcwvHX2TI"
+  rate_limit:
+    requests_per_second: 1000
+    burst: 2000
+
+  # Subprocess agent management: Gateway spawns Agent child processes
+  # that connect back via gRPC. No need to start agents separately.
+  subprocess:
+    enabled: false
+    agents: []
+    # Example:
+    # agents:
+    #   - name: "worker-agent-1"
+    #     config_file: "configs/config.agent.yaml"
+    #     auto_start: true
+    #     restart_policy: "on-failure"  # always | on-failure | never
+    #     max_restarts: 5
+    #     env:
+    #       OPENAI_API_KEY: "sk-xxx"
+
+logging:
+  level: info
+  file: "/var/log/forerouter/gateway.log"
+  max_size_mb: 100
+  max_backups: 10
