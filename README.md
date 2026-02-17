@@ -1,4 +1,4 @@
-# Forerouter VPA Agent（Release）
+# Forerouter VPA Agent
 
 Forerouter 是一个运行在本地设备上的跨平台 VPA（Virtual Personal Assistant）智能体。  
 在 `local` 模式下，Gateway 与 Agent 同进程运行，开箱即可使用。
