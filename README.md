@@ -124,6 +124,35 @@ curl http://127.0.0.1:31889/api/v1/health
 - 检查是否被本机防火墙拦截。
 - 检查 MCP 路径是否为 `/mcp`。
 
+### 配置示例
+- 获取大模型API_KEY，以阿里千问为例
+![获取千问模型API_KEY](./docs/api_key.png)
+- 获取Tavily搜索服务的API_KEY
+![Tavily获取API_KEY](./docs/web_search_api_key.png)
+- 配置vpa agent 的大模型, 第一个是文本模型，第二个是多模态模型配置
+![文本模型](./docs/config_api_key.png)
+- 配置搜索服务API_KEY
+![Tavily 搜索配置](./docs/config_web_search_api_key.png)
+- 启动服务
+```
+# Window 平台
+.\start-local.bat
+
+# Linux/Mac 平台
+./start-local.sh
+```
+- 打开一款支持 A2A协议的的工具或者MCP协议的工具，例如 **[www.forerouter.com](http://www.forerouter.com)**
+- 进入AI对话页面,选择设置
+![AI对话](./docs/1.png)
+- 选择MCP工具
+![MCP工具配置](./docs/2.png)
+- 配置A2A连接
+![A2A连接 vpa agent](./docs/3.png)
+- 使用 vpa agent，安装openclaw
+![回到AI对话页面，在技能工具中选择刚才配置的A2A服务](./docs/4.png)
+- 让VPA Agent 安装 openclaw
+![让vpa agent安装openclaw](./docs/5.png)
+
 ### 命令执行需要确认
 
 默认开启命令执行确认（`agent.security.command_execution.require_confirmation: true`），这是预期安全行为。
