@@ -4,11 +4,11 @@
 mode: local
 
 gateway:
-  http_port: 318089
-  grpc_port: 318090
+  http_port: 31889
+  grpc_port: 31890
   mcp:
     enabled: true
-    port: 318091
+    port: 31891
     base_path: "/mcp"
     # tool_whitelist: []   # Empty = expose all tools
     # default_node_id: "local"
@@ -40,13 +40,13 @@ agent:
     providers:
       openai:
         api_key: "${OPENAI_API_KEY}"
-        model: Qwen/Qwen3-8B
-        base_url: "https://api.siliconflow.cn/v1"
-        max_tokens: 4096
+        model: qwen3.5-plus
+        base_url: "https://dashscope.aliyuncs.com/compatible-mode/v1"
+        max_tokens: 32768
         temperature: 0.7
       openai_vision:
         type: openai                 # Explicit type since name != "openai"
-        api_key: "${OPENAI_VISION_API_KEY}"
+        api_key: "${OPENAI_API_KEY}"
         model: glm-4.6v-flash
         base_url: "https://open.bigmodel.cn/api/paas/v4"
         max_tokens: 4096
@@ -90,14 +90,14 @@ agent:
       - transcribe_audio
       - code_interpreter
     search:
-      default_provider: duckduckgo   # Free, no API key needed. Options: duckduckgo, tavily, bing, google, brave, searxng
+      default_provider: tavily   # Free, no API key needed. Options: duckduckgo, tavily, bing, google, brave, searxng
       max_results: 5
       timeout_seconds: 15
       providers:
         duckduckgo: {}               # No config needed
-        # tavily:
-        #   api_key: "${TAVILY_API_KEY}"
-        #   search_depth: "basic"    # "basic" or "advanced"
+        tavily:
+          api_key: "${TAVILY_API_KEY}"
+          search_depth: "advanced"    # "basic" or "advanced"
         # bing:
         #   api_key: "${BING_API_KEY}"
         #   market: "zh-CN"

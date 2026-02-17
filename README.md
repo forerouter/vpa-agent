@@ -79,14 +79,14 @@ Windows 脚本会优先使用 `bin\\forerouter-windows-arm64.exe`（若存在）
 
 默认 local 模式（以 `configs/config.local.yaml` 为准）会启动：
 
-- HTTP API：`http://127.0.0.1:318089`
+- HTTP API：`http://127.0.0.1:31889`
 - gRPC：`127.0.0.1:318090`
-- MCP：`http://127.0.0.1:318091/mcp`
+- MCP：`http://127.0.0.1:31891/mcp`
 
 健康检查：
 
 ```bash
-curl http://127.0.0.1:318089/api/v1/health
+curl http://127.0.0.1:31889/api/v1/health
 ```
 
 正常返回示例：
@@ -99,7 +99,7 @@ curl http://127.0.0.1:318089/api/v1/health
 
 如果要让外部 AI 客户端通过 MCP 调用本地 Agent，可使用：
 
-- URL：`http://127.0.0.1:318091/mcp`
+- URL：`http://127.0.0.1:31891/mcp`
 - local 默认可不启用鉴权（以配置为准）
 
 如需限制暴露工具，可在 `gateway.mcp.tool_whitelist` 中配置白名单。

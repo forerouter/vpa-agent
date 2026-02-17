@@ -4,11 +4,11 @@
 mode: gateway
 
 gateway:
-  http_port: 318089
-  grpc_port: 318090
+  http_port: 31889
+  grpc_port: 31890
   mcp:
     enabled: true
-    port: 318091
+    port: 31891
     base_path: "/mcp"
     # tool_whitelist:              # Restrict exposed tools (empty = all)
     #   - file_read

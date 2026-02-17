@@ -4,7 +4,7 @@
 mode: agent
 
 agent:
-  gateway_addr: "localhost:318090"   # remote gateway gRPC address
+  gateway_addr: "localhost:31890"   # remote gateway gRPC address
   node_name: "myvpaagent"          # unique name for this agent node (for logging, monitoring, etc.)
   auth_token: "Rf7XbvjHXQrYuhWsLXg1DZi1WexZoHHKBYQ4MXG9yET9bxcf"
   max_iterations: 30               # Max ReAct loop iterations before forcing a final answer
