@@ -1,0 +1,138 @@
+# Forerouter VPA Agent — Remote Gateway Mode
+# Run with: ./forerouter --mode=agent --config=configs/config.agent.yaml
+
+mode: agent
+
+agent:
+  gateway_addr: "localhost:31890"   # remote gateway gRPC address
+  node_name: "myvpaagent"          # unique name for this agent node (for logging, monitoring, etc.)
+  auth_token: "Rf7XbvjHXQrYuhWsLXg1DZi1WexZoHHKBYQ4MXG9yET9bxcf"
+  max_iterations: 30               # Max ReAct loop iterations before forcing a final answer
+  llm:
+    default_provider: openai
+    # Dedicated multimodal providers (leave empty to disable corresponding tool)
+    vision_provider: openai_vision   # Used by analyze_image tool
+    # video_provider: openai_vision  # Used by analyze_video tool (many vision models also handle video)
+    # audio_provider: ""             # Used by transcribe_audio tool
+    providers:
+      openai:
+        api_key: "${OPENAI_API_KEY}"
+        model: Qwen/Qwen3-8B
+        base_url: "https://api.siliconflow.cn/v1" 
+        max_tokens: 4096
+        temperature: 0.7
+      openai_vision:
+        type: openai
+        api_key: "${OPENAI_VISION_API_KEY}"
+        model: glm-4.6v-flash
+        base_url: "https://open.bigmodel.cn/api/paas/v4"
+        max_tokens: 4096
+        temperature: 0.3
+      claude:
+        api_key: "${ANTHROPIC_API_KEY}"
+        model: claude-sonnet-4-20250514
+        max_tokens: 4096
+      ollama:
+        endpoint: "http://localhost:11434"
+        model: llama3
+  memory:
+    conversation_max_tokens: 8000
+    long_term_db: "~/.forerouter/data/memory.db"
+    embedding_provider: openai
+  tools:
+    enabled:
+      - file_read
+      - file_write
+      - file_append
+      - file_delete
+      - file_copy
+      - file_move
+      - file_info
+      - file_exists
+      - file_search
+      - directory_list
+      - directory_create
+      - directory_delete
+      - grep
+      - process_exec
+      - memory_search
+      - memory_save
+      - web_search
+      - url_fetch
+      - activate_skill
+      - read_skill_file
+      - list_skill_files
+      - analyze_image
+      - analyze_video
+      - transcribe_audio
+      - code_interpreter
+    search:
+      default_provider: duckduckgo   # Free, no API key needed. Options: duckduckgo, tavily, bing, google, brave, searxng
+      max_results: 5
+      timeout_seconds: 15
+      providers:
+        duckduckgo: {}               # No config needed
+        # tavily:
+        #   api_key: "${TAVILY_API_KEY}"
+        #   search_depth: "basic"    # "basic" or "advanced"
+        # bing:
+        #   api_key: "${BING_API_KEY}"
+        #   market: "zh-CN"
+        # google:
+        #   api_key: "${GOOGLE_API_KEY}"
+        #   cx: "${GOOGLE_CX}"
+        # brave:
+        #   api_key: "${BRAVE_API_KEY}"
+        # searxng:
+        #   base_url: "http://localhost:8888"
+  security:
+    file_access:
+      allowed_paths: []
+      denied_paths:
+        - "~/.ssh"
+        - "~/.gnupg"
+        - "~/.aws"
+        - "boot"
+        - "dev"
+        - "etc"
+        - "proc"
+        - "sys"
+        - "Library"
+        - "Applications"
+        - "System"
+        - "bin"
+        - "sbin"
+        - "private"
+        - "srv"
+        - "C:\\Windows"
+        - "C:\\Program Files"
+        - "C:\\Program Files (x86)"
+    command_execution:
+      require_confirmation: true
+      timeout_seconds: 30
+  plugins:
+    dir: "~/.forerouter/plugins"
+    enabled: []
+
+  # Agent Skills — specialized instructions loaded on demand
+  skills:
+    enabled: true
+    builtin: true                    # Load built-in skills (image/video/audio understanding, etc.)
+    dirs:
+      - "~/.forerouter/skills"       # User-created custom skills
+      # - "/path/to/team/skills"     # Team-shared skills
+
+  # Code Interpreter sub-agent — writes & runs Python code for data analysis, scripting, etc.
+  code_interpreter:
+    enabled: true
+    # provider: ""                  # LLM provider for code generation (empty = use default)
+    # python_path: ""               # Python executable (empty = auto-detect python3/python)
+    max_iterations: 20               # Max sub-agent ReAct iterations
+    max_execution_time: 60           # Seconds per code execution
+    output_dir: "~/.forerouter/output"  # Directory for generated files (charts, exports)
+
+logging:
+  level: info
+  file: "~/.forerouter/logs/forerouter.log"
+  max_size_mb: 50
+  max_backups: 5
